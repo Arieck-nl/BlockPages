@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+apply from: "$project.rootDir/buildConfig/buildConfig.gradle"
+
 android {
     namespace 'nl.arieck.blockpages'
     compileSdk 34
@@ -20,12 +22,60 @@ android {
         }
     }
 
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    buildFeatures {
+        buildConfig = true
+    }
+
+    signingConfigs {
+        envConfig {
+            storeFile file(FIELD_KEYSTORE_PATH)
+            keyAlias FIELD_KEYSTORE_ALIAS
+            storePassword FIELD_KEYSTORE_PASSWORD
+            keyPassword FIELD_KEYSTORE_PASSWORD
+            v1SigningEnabled true
+            v2SigningEnabled true
         }
     }
+
+    flavorDimensions "environment"
+
+    productFlavors {
+
+        //dev flavor equals test environment on the backend
+        dev {
+            dimension "environment"
+            applicationIdSuffix ".dev"
+            versionNameSuffix "-test"
+            buildConfigField "String", "FIELD_APP_NAME", "\"BlockPages-test\""
+            manifestPlaceholders = [appName: "BlockPages", appSuffix: ""]
+        }
+
+        prod {
+            dimension "environment"
+            buildConfigField "String", "FIELD_APP_NAME", "\"BlockPages\""
+            manifestPlaceholders = [appName: "BlockPages", appSuffix: ""]
+        }
+    }
+
+    buildTypes {
+        debug {
+            ext.enableCrashlytics = false
+            signingConfig signingConfigs.envConfig
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles fileTree(dir: "${project.rootDir}/proguard_libs", include: ["*.pro"]).asList().toArray()
+        }
+
+        release {
+            ext.enableCrashlytics = true
+            signingConfig signingConfigs.envConfig
+            minifyEnabled true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles fileTree(dir: "${project.rootDir}/proguard_libs", include: ["*.pro"]).asList().toArray()
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
