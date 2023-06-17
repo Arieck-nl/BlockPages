@@ -3,41 +3,57 @@ package nl.arieck.blockpages
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import nl.arieck.blockpages.domain.common.Failure
+import nl.arieck.blockpages.domain.common.commonRes
+import nl.arieck.blockpages.ui.features.home.HomeScreen
 import nl.arieck.blockpages.ui.theme.BlockPagesTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+
+
             BlockPagesTheme {
+                var errorState by remember { mutableStateOf<Failure?>(null) }
+                val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+
+
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Greeting("Android")
+                HomeScreen(onError = {})
+
+
+                LaunchedEffect(errorState) {
+
+
+                    errorState?.let {
+                        val result = snackbarHostState.showSnackbar(
+                            message = getString(it.commonRes()),
+                            actionLabel = getString(R.string.general_ok).uppercase(),
+                        )
+                        when (result) {
+                            SnackbarResult.ActionPerformed -> {
+                                /* action has been performed */
+                                errorState = null
+                            }
+
+                            SnackbarResult.Dismissed -> {
+                                /* dismissed, no action needed */
+                                errorState = null
+                            }
+                        }
+                    }
                 }
+
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BlockPagesTheme {
-        Greeting("Android")
     }
 }

@@ -2,6 +2,7 @@ package nl.arieck.blockpages.ui.features.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,8 +29,9 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.flowOf
 import nl.arieck.blockpages.domain.common.Failure
-import nl.arieck.blockpages.domain.features.article.models.Article
+import nl.arieck.blockpages.domain.features.character.models.Character
 import nl.arieck.blockpages.ui.common.toMonthDate
+import nl.arieck.blockpages.ui.theme.BlockPagesTheme
 import org.koin.androidx.compose.getViewModel
 
 /**
@@ -43,7 +45,7 @@ fun HomeScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
-    val listItems: LazyPagingItems<Article> = viewModel.parkingReviewData.collectAsLazyPagingItems()
+    val listItems: LazyPagingItems<Character> = viewModel.parkingReviewData.collectAsLazyPagingItems()
 
     DisposableEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.addObserver(viewModel)
@@ -57,20 +59,24 @@ fun HomeScreen(
     }
 
 
-    HomeUi(uiState = uiState, listItems = listItems, onArticleClick = {})
+    HomeUi(uiState = uiState, listItems = listItems, onCharacterClick = {})
 
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeUi(uiState: HomeUiState, listItems: LazyPagingItems<Article>?, onArticleClick: () -> Unit) {
+fun HomeUi(
+    uiState: HomeUiState,
+    listItems: LazyPagingItems<Character>?,
+    onCharacterClick: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxSize()
             .statusBarsPadding()
     ) {
-        LazyColumn {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             listItems?.let { articlePage ->
 
                 // dig into the snapshot list in order to add sticky headers
@@ -94,12 +100,13 @@ fun HomeUi(uiState: HomeUiState, listItems: LazyPagingItems<Article>?, onArticle
                         items(articlesInMonth) { article ->
                             articlePage[articlePage.itemSnapshotList.indexOf(article)]
 
-                            Row(modifier = Modifier
-                                .background(MaterialTheme.colorScheme.onBackground)
-                                .padding(16.dp)) {
+                            Row(
+                                modifier = Modifier
+                                    .background(MaterialTheme.colorScheme.onBackground)
+                                    .padding(16.dp)
+                            ) {
                                 Text(modifier = Modifier.fillMaxWidth(), text = article.createdAt.orEmpty())
                             }
-
                         }
                     }
             }
@@ -110,18 +117,20 @@ fun HomeUi(uiState: HomeUiState, listItems: LazyPagingItems<Article>?, onArticle
 @Preview
 @Composable
 fun HomePreview() {
-    HomeUi(
-        uiState = HomeUiState(
-            articles = listOf(
-            ), loading = false
-        ), listItems = flowOf(
-            PagingData.from(
-                listOf(
-                    Article(id = "1", createdAt = "2022-09-27T05:57:09.607741"),
-                    Article(id = "1", createdAt = "2022-09-27T05:57:09.607741"),
-                    Article(id = "1", createdAt = "2022-09-27T05:57:09.607741"),
+    BlockPagesTheme {
+
+        HomeUi(
+            uiState = HomeUiState(
+                loading = false
+            ), listItems = flowOf(
+                PagingData.from(
+                    listOf(
+                        Character(id = "1", createdAt = "2022-09-27T05:57:09.607741"),
+                        Character(id = "1", createdAt = "2022-09-27T05:57:09.607741"),
+                        Character(id = "1", createdAt = "2022-09-27T05:57:09.607741"),
+                    )
                 )
-            )
-        ).collectAsLazyPagingItems()
-    ) { }
+            ).collectAsLazyPagingItems()
+        ) { }
+    }
 }
