@@ -13,7 +13,7 @@
 ## Installation
 Clone this repository and import into **Android Studio**
 ```bash
-https://github.com/arieck-nl/BlockPages
+https://github.com/Arieck-nl/BlockPages
 ```
 
 ## Configuration
