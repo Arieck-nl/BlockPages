@@ -1,0 +1,87 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
+ext {
+    FIELD_KEYSTORE_PATH = "fakepath"
+    FIELD_BASE_URL = ""
+    FIELD_KEYSTORE_ALIAS = ""
+    FIELD_KEYSTORE_PASSWORD = ""
+}
+
+def getCurrentFlavor() {
+    Gradle gradle = getGradle()
+    def pattern = Pattern.compile("(?:.*:)*[a-z]+([A-Z][A-Za-z]+)")
+    def flavor = ""
+
+    gradle.getStartParameter().getTaskNames().any { name ->
+        Matcher matcher = pattern.matcher(name)
+        if (matcher.find()) {
+            flavor = matcher.group(1)
+            return true
+        }
+    }
+
+    return flavor
+}
+
+def getCurrentType() {
+    return gradle.startParameter.taskNames.any { it.toLowerCase().contains("debug") } ? "debug" : "release"
+}
+
+def readDotEnv = {
+
+    def rawFlavor = getCurrentFlavor()
+    def flavor = rawFlavor.toLowerCase()
+    ext.flavor = rawFlavor
+    def envFile = ""
+
+    println("flavor: $rawFlavor")
+
+    fileTree("${project.rootDir}/buildConfig").visit { FileVisitDetails details ->
+        def parentDirectory = details.file.parentFile.name
+        def filePath = details.file.path
+
+        if (flavor.contains(parentDirectory) && filePath.endsWith("app.properties")) {
+            envFile = filePath
+        } else if (flavor.contains(parentDirectory) && filePath.endsWith(".jks")) {
+            println("jks: $filePath")
+            project.ext.set("FIELD_KEYSTORE_PATH", filePath)
+        }
+    }
+
+    def env = [:]
+    println("Reading env from: $envFile")
+    try {
+        new File("$envFile").eachLine { line ->
+            def matcher = (line =~ /^\s*(?:export\s+|)([\w\d.\-_]+)\s*=\s*['"]?(.*?)?['"]?\s*$/)
+            if (matcher.getCount() == 1 && matcher[0].size() == 3) {
+                def key = matcher[0][1]
+                def value = matcher[0][2]
+                env.put(key, value)
+
+                if (key == "KEYSTORE_ALIAS") {
+                    project.ext.set("FIELD_KEYSTORE_ALIAS", value)
+                } else if (key == "KEYSTORE_PASSWORD") {
+                    project.ext.set("FIELD_KEYSTORE_PASSWORD", value)
+                }
+            }
+        }
+    } catch (FileNotFoundException ignored) {
+        println("*** Missing app.properties file ****")
+    }
+    project.ext.set("env", env)
+}
+readDotEnv()
+
+android {
+    defaultConfig {
+        project.env.each { k, v ->
+            def escaped = v.replaceAll("%", "\\\\u0025")
+            println("**** property key **** $k ***")
+            buildConfigField "String", k, "\"$v\""
+            resValue "string", k, "\"$escaped\""
+
+
+        }
+    }
+}

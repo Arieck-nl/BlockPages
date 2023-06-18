@@ -55,13 +55,13 @@ android {
             dimension "environment"
             buildConfigField "String", "FIELD_APP_NAME", "\"BlockPages\""
             manifestPlaceholders = [appName: "BlockPages", appSuffix: ""]
+            signingConfig signingConfigs.envConfig
         }
     }
 
     buildTypes {
         debug {
             ext.enableCrashlytics = false
-            signingConfig signingConfigs.envConfig
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             proguardFiles fileTree(dir: "${project.rootDir}/proguard_libs", include: ["*.pro"]).asList().toArray()
@@ -69,7 +69,6 @@ android {
 
         release {
             ext.enableCrashlytics = true
-            signingConfig signingConfigs.envConfig
             minifyEnabled true
             shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
