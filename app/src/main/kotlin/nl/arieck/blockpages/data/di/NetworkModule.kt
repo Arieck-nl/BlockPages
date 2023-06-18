@@ -1,5 +1,6 @@
 package nl.arieck.blockpages.data.di
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -18,18 +19,23 @@ val networkModule = module {
 
     val baseUrl = BuildConfig.API_URL_PREFIX + BuildConfig.BASE_URL
 
-    factory {
+    single {
         HttpClient {
             install(Logging) {
-                level = LogLevel.ALL
+                level = if (BuildConfig.DEBUG) LogLevel.BODY else LogLevel.NONE
                 logger = Logger.ANDROID
                 sanitizeHeader { header -> header == HttpHeaders.Authorization }
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        Log.d("Ktor HTTP call", message)
+                    }
+                }
             }
             defaultRequest {
                 url(baseUrl)
             }
             install(Resources)
-            install(ContentNegotiation){
+            install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true })
             }
             expectSuccess = true

@@ -11,10 +11,15 @@ import nl.arieck.blockpages.domain.features.character.models.Character
 class CharacterRepositoryImpl(private val httpClient: HttpClient) : CharacterRepository {
     override suspend fun getCharacters(page: Int, limit: Int): List<Character>? {
         val entities: List<CharacterEntity>? =
-            httpClient.use { client ->
-                client.get(CharacterResource()).body<PagedResponseEntity<CharacterEntity>>().results
-            }
+            httpClient.get(CharacterResource(page)).body<PagedResponseEntity<CharacterEntity>>().results
 
-        return entities?.map { Character(it.id.toString(), it.createdAt) }
+        return entities?.map {
+            Character(
+                id = it.id.toString(),
+                createdAt = it.created,
+                name = it.name,
+                imageUrl = it.image
+            )
+        }
     }
 }

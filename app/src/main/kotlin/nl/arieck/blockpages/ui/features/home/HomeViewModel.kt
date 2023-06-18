@@ -85,7 +85,7 @@ class BlockPagingSource(
             onError(it.toFailure())
         }.getOrNull().orEmpty()
 
-        val prevKey = if (pageNumber > 0) pageNumber - 1 else null
+        val prevKey = if (pageNumber > 1) pageNumber - 1 else null
 
         // This API defines that it's out of data when a page returns empty. When out of
         // data, we return `null` to signify no more pages should be loaded

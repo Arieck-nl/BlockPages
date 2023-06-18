@@ -3,7 +3,7 @@ package nl.arieck.blockpages.data.features.character
 import io.ktor.resources.Resource
 
 @Resource("/api/character")
-class CharacterResource {
+class CharacterResource(val page: Int = 1) {
     @Resource("new")
     class New(val parent: CharacterResource = CharacterResource())
 
