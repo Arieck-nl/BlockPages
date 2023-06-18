@@ -2,6 +2,7 @@ package nl.arieck.blockpages.data.di
 
 import android.util.Log
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.ANDROID
@@ -20,7 +21,7 @@ val networkModule = module {
     val baseUrl = BuildConfig.API_URL_PREFIX + BuildConfig.BASE_URL
 
     single {
-        HttpClient {
+        val block: HttpClientConfig<*>.() -> Unit = {
             install(Logging) {
                 level = if (BuildConfig.DEBUG) LogLevel.BODY else LogLevel.NONE
                 logger = Logger.ANDROID
@@ -39,6 +40,14 @@ val networkModule = module {
                 json(Json { ignoreUnknownKeys = true })
             }
             expectSuccess = true
+        }
+
+        block
+    }
+
+    single {
+        HttpClient {
+            get<HttpClientConfig<*>.() -> Unit>().invoke(this)
         }
     }
 

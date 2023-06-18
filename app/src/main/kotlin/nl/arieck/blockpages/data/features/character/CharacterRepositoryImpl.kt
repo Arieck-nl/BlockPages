@@ -9,7 +9,7 @@ import nl.arieck.blockpages.domain.features.character.CharacterRepository
 import nl.arieck.blockpages.domain.features.character.models.Character
 
 class CharacterRepositoryImpl(private val httpClient: HttpClient) : CharacterRepository {
-    override suspend fun getCharacters(page: Int, limit: Int): List<Character>? {
+    override suspend fun getCharacters(page: Int): List<Character>? {
         val entities: List<CharacterEntity>? =
             httpClient.get(CharacterResource(page)).body<PagedResponseEntity<CharacterEntity>>().results
 

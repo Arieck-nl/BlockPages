@@ -51,7 +51,7 @@ fun HomeScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
-    val listItems: LazyPagingItems<Character> = viewModel.parkingReviewData.collectAsLazyPagingItems()
+    val listItems: LazyPagingItems<Character> = viewModel.characterData.collectAsLazyPagingItems()
 
     DisposableEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.addObserver(viewModel)

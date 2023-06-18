@@ -38,7 +38,7 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow(HomeUiState(loading = true))
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    val parkingReviewData: Flow<PagingData<Character>> = Pager(
+    val characterData: Flow<PagingData<Character>> = Pager(
         config = PagingConfig(pageSize = 20),
         initialKey = 1,
         pagingSourceFactory = { BlockPagingSource(characterRepository::getCharacters, ::loading, ::error) }
@@ -64,7 +64,7 @@ class HomeViewModel(
 }
 
 class BlockPagingSource(
-    val getPage: suspend (page: Int, limit: Int) -> List<Character>?,
+    val getPage: suspend (page: Int) -> List<Character>?,
     val loading: (Boolean) -> Unit,
     val onError: (Failure) -> Unit,
 ) : PagingSource<Int, Character>() {
@@ -80,7 +80,7 @@ class BlockPagingSource(
         val pageNumber = params.key ?: 1
 
         val page = runCatching {
-            getPage(pageNumber, PAGE_LIMIT)
+            getPage(pageNumber)
         }.onFailure {
             onError(it.toFailure())
         }.getOrNull().orEmpty()
