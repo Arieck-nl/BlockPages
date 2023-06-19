@@ -7,4 +7,5 @@ import nl.arieck.blockpages.domain.features.character.models.Character
  */
 interface CharacterRepository {
     suspend fun getCharacters(page: Int): List<Character>?
+    suspend fun getCharacter(id: String): Character
 }

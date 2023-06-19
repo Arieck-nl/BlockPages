@@ -2,11 +2,13 @@
 
 ## DEMO project with:
 - Kotlin
+- Coroutines
 - Ktor
 - Koin
 - Clean Architecture (lightweight)
 - MVVM
 - Jetpack Compose
+- Compose Navigation
 - Compose Paging
 - Mockito
 

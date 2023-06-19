@@ -1,7 +1,8 @@
-package nl.arieck.blockpages.ui.features.home
+package nl.arieck.blockpages.ui.features.character
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,10 +45,11 @@ import kotlin.math.nextDown
  * Created by Rick van 't Hof on 16/06/2023.
  */
 @Composable
-fun HomeScreen(
-    viewModel: HomeViewModel = getViewModel(),
+fun CharacterScreen(
+    viewModel: CharacterViewModel = getViewModel(),
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
     onError: (failure: Failure) -> Unit,
+    characterActions: CharacterNavActions,
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
@@ -65,16 +67,16 @@ fun HomeScreen(
     }
 
 
-    HomeUi(uiState = uiState, listItems = listItems, onCharacterClick = {})
+    CharacterUi(uiState = uiState, listItems = listItems, onCharacterClick = { characterActions.toDetail(it) })
 
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeUi(
-    uiState: HomeUiState,
+fun CharacterUi(
+    uiState: CharacterUiState,
     listItems: LazyPagingItems<Character>?,
-    onCharacterClick: () -> Unit,
+    onCharacterClick: (id: String) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -111,6 +113,9 @@ fun HomeUi(
 
                             Column(
                                 modifier = Modifier
+                                    .clickable {
+                                        onCharacterClick(character.id)
+                                    }
                                     .background(MaterialTheme.colorScheme.secondaryContainer)
                                     .padding(16.dp)
                             ) {
@@ -153,18 +158,27 @@ fun HomeUi(
 
 @Preview
 @Composable
-fun HomePreview() {
+fun CharacterPreview() {
     BlockPagesTheme {
 
-        HomeUi(
-            uiState = HomeUiState(
+        CharacterUi(
+            uiState = CharacterUiState(
                 loading = false
             ), listItems = flowOf(
                 PagingData.from(
                     listOf(
-                        Character(id = "1", createdAt = "2022-09-27T05:57:09.607741", name = "Morty", imageUrl = null),
-                        Character(id = "1", createdAt = "2022-09-27T05:57:09.607741", name = "Morty", imageUrl = null),
-                        Character(id = "1", createdAt = "2022-09-27T05:57:09.607741", name = "Morty", imageUrl = null),
+                        Character(
+                            id = "1",
+                            createdAt = "2022-09-27T05:57:09.607741",
+                            name = "Morty",
+                            imageUrl = null,
+                        ),
+                        Character(
+                            id = "1",
+                            createdAt = "2022-09-27T05:57:09.607741",
+                            name = "Morty",
+                            imageUrl = null,
+                        ),
                     )
                 )
             ).collectAsLazyPagingItems()

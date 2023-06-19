@@ -1,4 +1,4 @@
-package nl.arieck.blockpages.ui.features.home
+package nl.arieck.blockpages.ui.features.character
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.paging.testing.asSnapshot
@@ -26,7 +26,7 @@ import org.mockito.MockitoAnnotations
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class HomeViewModelTest {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var characterViewModel: CharacterViewModel
 
     private val characterRepository: CharacterRepository = mock()
 
@@ -41,7 +41,7 @@ internal class HomeViewModelTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        homeViewModel = HomeViewModel(characterRepository)
+        characterViewModel = CharacterViewModel(characterRepository)
     }
 
     @Test
@@ -53,7 +53,7 @@ internal class HomeViewModelTest {
         runBlocking {
             Mockito.`when`(characterRepository.getCharacters(1)).thenReturn(characterList)
 
-            val result = homeViewModel.characterData.asSnapshot()
+            val result = characterViewModel.characterData.asSnapshot()
             assertEquals(result, characterList)
         }
     }
@@ -67,7 +67,7 @@ internal class HomeViewModelTest {
         runBlocking {
             Mockito.`when`(characterRepository.getCharacters(1)).thenReturn(null)
 
-            val result = homeViewModel.characterData.asSnapshot()
+            val result = characterViewModel.characterData.asSnapshot()
             assertNotEquals(result, characterList)
         }
     }

@@ -3,5 +3,12 @@
     <string name="general_ok">ok</string>
     <string name="error_retry">Something went wrong. Please try again.</string>
     <string name="error_not_found">Unable to find item.</string>
-    <string name="error_unknown">Uknown error, please consult tech department.</string>
+    <string name="error_unknown">Unknown error, please consult tech department.</string>
+    <string name="character_detail_name_label">Name: </string>
+    <string name="character_detail_episode_label">Episodes: </string>
+    <string name="character_detail_gender_label">Gender: </string>
+    <string name="character_detail_origin_label">Origin: </string>
+    <string name="character_detail_species_label">Species: </string>
+    <string name="character_detail_status_label">Status: </string>
+    <string name="character_detail_type_label">Type: </string>
 </resources>

@@ -14,12 +14,26 @@ class CharacterRepositoryImpl(private val httpClient: HttpClient) : CharacterRep
             httpClient.get(CharacterResource(page)).body<PagedResponseEntity<CharacterEntity>>().results
 
         return entities?.map {
-            Character(
-                id = it.id.toString(),
-                createdAt = it.created,
-                name = it.name,
-                imageUrl = it.image
-            )
+            it.toDomain()
         }
     }
+
+    override suspend fun getCharacter(id: String): Character {
+        return httpClient.get(CharacterResource.Id(id = id)).body<CharacterEntity>().toDomain()
+    }
+}
+
+fun CharacterEntity.toDomain(): Character {
+    return Character(
+        id = id.toString(),
+        createdAt = created,
+        name = name,
+        imageUrl = image,
+        episode = episode,
+        gender = gender,
+        origin = origin?.name,
+        species = species,
+        status = status,
+        type = type,
+    )
 }

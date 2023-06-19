@@ -1,4 +1,4 @@
-package nl.arieck.blockpages.ui.features.home
+package nl.arieck.blockpages.ui.features.character
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -25,18 +25,18 @@ import org.koin.core.component.KoinComponent
 /**
  * UI state for the Home screen
  */
-data class HomeUiState(
+data class CharacterUiState(
     val failure: Failure? = null,
     val loading: Boolean = false
 )
 
-class HomeViewModel(
+class CharacterViewModel(
     private val characterRepository: CharacterRepository
 ) : ViewModel(), KoinComponent, LifecycleEventObserver {
 
     // UI state exposed to the UI
-    private val _uiState = MutableStateFlow(HomeUiState(loading = true))
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(CharacterUiState(loading = true))
+    val uiState: StateFlow<CharacterUiState> = _uiState.asStateFlow()
 
     val characterData: Flow<PagingData<Character>> = Pager(
         config = PagingConfig(pageSize = 20),

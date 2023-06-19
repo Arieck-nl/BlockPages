@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import nl.arieck.blockpages.domain.common.Failure
 import nl.arieck.blockpages.domain.common.commonRes
-import nl.arieck.blockpages.ui.features.home.HomeScreen
+import nl.arieck.blockpages.ui.features.character.CharacterNav
 import nl.arieck.blockpages.ui.theme.BlockPagesTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,12 +27,10 @@ class MainActivity : ComponentActivity() {
                 val snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 
 
-                // A surface container using the 'background' color from the theme
-                HomeScreen(onError = {})
+                CharacterNav(onError = { errorState = it })
 
-
+                // error snackbar
                 LaunchedEffect(errorState) {
-
 
                     errorState?.let {
                         val result = snackbarHostState.showSnackbar(
